@@ -1,0 +1,17 @@
+{
+  "cureTime": 2000,
+  "liftDistance": 0.2,
+  "gcode" : {
+    "init": "M17\nG90\nG28 A\nG92 A0\nM18\n",
+    "shutter": {
+      "open": "G90\nG0 A35 F2000\n",
+      "close": "G90\nG0 A0 F2000\n"
+    },
+    "start": "M17\nG90\nG28\nG92 A0 B0 Z33\nG0 B180 F2000\nG0 Z0 F300\nG0 B0 F2000\n",
+    "end": "G90\nG0 B180 F2000\nG91\nG0 Z40 F300\nG90\nG0 B0 F2000\nM18\n",
+    "layer": {
+      "before": "G90\nG0 B180 F2000\nG0 Z{position} F100\nG0 B0 F2000\n",
+      "after": ""
+    }
+  }
+}
