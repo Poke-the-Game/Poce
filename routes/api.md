@@ -1,5 +1,9 @@
 # RESTful API overview
 
+Base url: `<server>/api/`
+
+* `/status`
+  * `GET` → retrieve print status
 * `/jobs`
   * `GET` → retrieve list of jobs
   * `POST` → create new job (and automatically start it)

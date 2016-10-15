@@ -12,15 +12,30 @@ api.use(bodyParser.urlencoded({extended: true}))
 class JobHandler {
   constructor () {
     this._jobs = []
-    this._current_job_index = -1
+    this._status = {
+      type: 'IDLE',
+      currentLayer: -1,
+      totalLayer: -1,
+      timeLeft: -1,
+      timeTotal: -1,
+      shutterPos: -1,
+      z_position: -1,
+      currentJob: undefined
+    }
   }
 
   get jobs () { return this._jobs }
-  get running () { return this._current_job_index !== -1 }
+  get status () { return this._status }
+  get running () { return this._status.currentJob !== undefined }
 
   addJob (job) {
     // also starts job
     this._jobs.push(job)
+    this.updateStatus()
+  }
+
+  updateStatus () {
+    this._status.currentJob = this._jobs[this._jobs.length - 1]
   }
 }
 
@@ -29,6 +44,10 @@ let jobHandler = new JobHandler()
 /*
  * API definitions
  */
+
+api.get('/status', (req, res) => {
+  res.json(jobHandler.status)
+})
 
 api.get('/jobs', (req, res) => {
   res.json(jobHandler.jobs)
