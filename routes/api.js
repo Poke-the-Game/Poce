@@ -1,26 +1,26 @@
-var express = require('express')
-var bodyParser = require('body-parser')
+const express = require('express')
+const bodyParser = require('body-parser')
 
-var api = express.Router()
+let api = express.Router()
 api.use(bodyParser.json())
 api.use(bodyParser.urlencoded({extended: true}))
 
-api.get('/ping', function (req, res) {
+api.get('/ping', (req, res) => {
   res.json({ping: 'pong'})
 })
 
 /* API GOES HERE ;) */
 
-api.get('/*', function (req, res) {
+api.get('/*', (req, res) => {
   res.status(400).json({reason: 'command not found'})
 })
-api.post('/*', function (req, res) {
+api.post('/*', (req, res) => {
   res.status(400).json({reason: 'command not found'})
 })
-api.put('/*', function (req, res) {
+api.put('/*', (req, res) => {
   res.status(400).json({reason: 'command not found'})
 })
-api.delete('/*', function (req, res) {
+api.delete('/*', (req, res) => {
   res.status(400).json({reason: 'command not found'})
 })
 
