@@ -1,9 +1,13 @@
 import React from 'react'
 
-let App = React.createClass({
-  render: () => {
-    return <div>Hello World</div>
+class App extends React.Component {
+  render() {
+    return (
+      <div>
+        Hi there! :)
+      </div>
+    );
   }
-})
+}
 
-export { App }
+export default App;
