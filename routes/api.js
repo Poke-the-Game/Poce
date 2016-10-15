@@ -2,6 +2,8 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const _ = require('lodash')
 
+const Controller = require('./printController.js').Controller
+
 let api = express.Router()
 api.use(bodyParser.json())
 api.use(bodyParser.urlencoded({extended: true}))
@@ -29,6 +31,8 @@ class JobHandler {
       z_position: -1,
       currentJob: {}
     }
+
+    this._controller = new Controller()
   }
 
   get jobs () { return this._jobs }
@@ -41,10 +45,8 @@ class JobHandler {
 
     this._status.type = State.PROCESSING // state will progress to State.PRINTING eventually
     this._status.currentJob = _.last(this._jobs)
-  }
 
-  updateStatus () {
-    // fubar
+    this._controller.startJob(this._status.currentJob)
   }
 
   cancelCurrentJob () {
