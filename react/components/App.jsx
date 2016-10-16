@@ -53,7 +53,12 @@ class Content extends React.Component {
              <Row className="show-grid">
                <Col md={6} mdPush={6}>
                  <div>
-                here comes upload
+                    <button className="btn btn-primary" onClick={this.handleUpload} style={btn_margin}>Upload .svg</button>
+                    <select class="form-control" multiple>
+                      <option>gear1.svg</option>
+                      <option>calibration_cube.svg</option>
+                      <option>geared-cube.svg</option>
+                    </select>
                  </div>
                </Col>
 
