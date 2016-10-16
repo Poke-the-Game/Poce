@@ -67,16 +67,27 @@ class Content extends React.Component {
                   <TestComponent/>
                 </Fetch>
 
-                <ButtonToolbar>
-                  <Button bsStyle="danger" style={btn_margin}>Stop Print</Button>
-                  <Button bsStyle="primary" style={btn_margin}>Pause Print</Button>
-                </ButtonToolbar>
+                <div>
+                    <button className="btn btn-danger" onClick={this.handleStop} style={btn_margin}>Stop Print</button>
+                    <button className="btn btn-primary" type="submit" style={btn_margin}>Pause Print</button>
+                </div>
               </Col>
 
              </Row>
            </Grid>
          </div>
       );
+   }
+
+   handleStop() {
+     fetch('http://localhost:3000/api/cancelCurrentJob')
+     .then(function(response){
+     	return response.json();
+     })
+     .then(function(json){
+      console.log("printing canceled");
+     	console.log(json);
+     });
    }
 }
 
