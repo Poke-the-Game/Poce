@@ -2,16 +2,16 @@
   "cureTime": 2000,
   "liftDistance": 0.2,
   "gcode" : {
-    "init": "M17\nG90\nG28 A\nG92 A0\nM18\n",
+    "init": ["M17", "G90", "G28 A", "G92 A0", "M18"],
     "shutter": {
-      "open": "G90\nG0 A35 F2000\n",
-      "close": "G90\nG0 A0 F2000\n"
+      "open": ["G90", "G0 A35 F2000"],
+      "close": ["G90", "G0 A0 F2000"]
     },
-    "start": "M17\nG90\nG28\nG92 A0 B0 Z33\nG0 B180 F2000\nG0 Z0 F300\nG0 B0 F2000\n",
-    "end": "G90\nG0 B180 F2000\nG91\nG0 Z40 F300\nG90\nG0 B0 F2000\nM18\n",
+    "start": ["M17", "G90", "G28", "G92 A0 B0 Z33", "G0 B180 F2000", "G0 Z0 F300", "G0 B0 F2000"],
+    "end": ["G90", "G0 B180 F2000", "G91", "G0 Z40 F300", "G90", "G0 B0 F2000", "M18"],
     "layer": {
-      "before": "G90\nG0 B180 F2000\nG0 Z{position} F100\nG0 B0 F2000\n",
-      "after": ""
+      "before": ["G90", "G0 B180 F2000", "G0 Z{position} F100", "G0 B0 F2000"],
+      "after": [""]
     }
   }
 }
