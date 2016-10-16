@@ -4,5 +4,11 @@
     "attributes": {
       "cureTime": 3000
     }
+  },
+  {
+    "name": "WaterWashable-FSL3D",
+    "attributes": {
+      "cureTime": 8000
+    }
   }
 ]
