@@ -11,5 +11,6 @@
       "before": ["G90", "G0 B180 F2000", "G0 Z{position} F100", "G0 B0 F2000"],
       "after": [""]
     }
-  }
+  },
+  "dpi": 90
 }

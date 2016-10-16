@@ -41,6 +41,10 @@ class JobHandler {
     let resin_fname = `${resin_root}/resins.json`
     this._resins = require(path.resolve(resin_fname))
 
+    let pconf_root = `${__dirname}/../printer`
+    let pconf_fname = `${pconf_root}/config.json`
+    this._pconf = require(path.resolve(pconf_fname))
+
     this._models = []
     let model_root = `${__dirname}/../models`
     for (let name of fs.readdirSync(model_root)) {
@@ -66,6 +70,7 @@ class JobHandler {
   get running () { return this._status.type !== State.IDLE && this._status.type !== State.PAUSED }
   get resins () { return this._resins }
   get models () { return this._models }
+  get pconf () { return this._pconf }
 
   addJob (job) {
     // also starts job
@@ -164,22 +169,22 @@ api.get('/projector/currentImage', (req, res) => {
   res.sendFile(path.resolve(fname))
 })
 
-var showPattern = false
-var dpi = 92
+let showPattern = false
 
 api.get('/projector', (req, res) => {
   res.json({
-    dpi: 90
+    dpi: jobHandler.pconf.dpi
   })
 })
 
 api.put('/projector/', (req, res) => {
   showPattern = req.query.showPattern !== undefined ? req.query.showPattern : showPattern
-  dpi = req.query.dpi !== undefined ? req.query.dpi : dpi
+  let dpi = req.query.dpi !== undefined ? req.query.dpi : jobHandler.pconf.dpi
   if (showPattern) {
     spawn('inkscape', ['--without-gui', `--export-png=${__dirname}/../calibration_pattern.png`, '--export-area-page', `--export-dpi=${dpi}`, `${__dirname}/../calibration_pattern.svg`])
     .then(() => spawn('avconv', ['-loglevel', 'panic', '-y', '-vcodec', 'png', '-i', `${__dirname}/../calibration_pattern.png`, '-vcodec', 'rawvideo', '-f', 'rawvideo', '-pix_fmt', 'rgb32', '-vf', 'pad=1024:768:ow/2-iw/2:oh/2-ih/2:black', '/dev/fb0']))
   }
+  jobHandler.pconf.dpi = dpi
   res.json({})
 })
 
