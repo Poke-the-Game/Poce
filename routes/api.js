@@ -154,7 +154,7 @@ api.put('/projector/', (req, res) => {
   dpi = req.query.dpi !== undefined ? req.query.dpi : dpi
   if (showPattern) {
     spawn('inkscape', ['--without-gui', `--export-png=${__dirname}/../calibration_pattern.png`, '--export-area-page', `--export-dpi=${dpi}`, `${__dirname}/../calibration_pattern.svg`])
-    .then(() => spawn('avconv', ['-loglevel', 'panic', '-y', '-vcodec', 'png', '-i', `${__dirname}/../calibration_pattern.png`, '-vcodec', 'rawvideo', '-f', 'rawvideo', '-pix_fmt', 'rgb32', '-vf', 'crop=1024:768:0:0', '/dev/fb0']))
+    .then(() => spawn('avconv', ['-loglevel', 'panic', '-y', '-vcodec', 'png', '-i', `${__dirname}/../calibration_pattern.png`, '-vcodec', 'rawvideo', '-f', 'rawvideo', '-pix_fmt', 'rgb32', '-vf', 'pad=1024:768:612:384:black', '/dev/fb0']))
   }
   res.json({})
 })
