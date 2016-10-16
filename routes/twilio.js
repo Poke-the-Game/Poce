@@ -10,10 +10,24 @@ tw.use(bodyParser.json())
 class TwilioHandler {
   constructor (sid, token) {
     this.client = new Twilio(sid, token)
+    this.callback = undefined
+  }
+
+  statusToString (status) {
+    return `[${status.type}] ${status.currentLayer}/${status.totalLayer} (${Math.round(status.progress*100)}%) layers`
   }
 
   messageToResponse (msg) {
-    return 'hey ho let\'s go'
+    if (msg.includes('status')) {
+      let status = this.callback()
+      return this.statusToString(status)
+    }
+
+    return 'Come again?'
+  }
+
+  setStatusCallback (callback) {
+    this.callback = callback
   }
 
   handlePost (req, res) {
@@ -21,7 +35,7 @@ class TwilioHandler {
     let to = req.body.To
 
     let message = req.body.Body.trim()
-    let response = this.messageToResponse(message)
+    let response = this.messageToResponse(message.toLowerCase())
 
     this.client.messages.create({
       from: to,
@@ -37,13 +51,21 @@ class TwilioHandler {
   }
 }
 
-if (process.env.TWILIO_ACCOUNT_SID === undefined || process.env.TWILIO_AUTH_TOKEN === undefined) {
+let useTwilio = process.env.TWILIO_ACCOUNT_SID !== undefined && process.env.TWILIO_AUTH_TOKEN !== undefined
+let myHandler
+if (!useTwilio) {
   console.log('$TWILIO_ACCOUNT_SID and/or $TWILIO_AUTH_TOKEN not set, disabling twilio support...')
   console.log('Possible fix:\n\texport TWILIO_ACCOUNT_SID="<SID>"\n\texport TWILIO_AUTH_TOKEN="<TOKEN>"')
 } else {
-  let myHandler = new TwilioHandler(
+  myHandler = new TwilioHandler(
     process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN)
   tw.post('/msg', (req, res) => myHandler.handlePost(req, res))
+}
+
+tw.setStatusCallback = (callback) => {
+  if (useTwilio) {
+    myHandler.setStatusCallback(callback)
+  }
 }
 
 module.exports = tw

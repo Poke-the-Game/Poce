@@ -144,4 +144,6 @@ api.delete('/*', (req, res) => {
   res.status(400).json({message: 'command not found'})
 })
 
+api.getStatus = () => jobHandler.status
+
 module.exports = api
