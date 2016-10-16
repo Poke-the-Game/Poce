@@ -7,12 +7,14 @@ const spawn = require('spawn-promise')
 
 let SerialPort
 let serialDevice = '/dev/ttyACM0'
+let virtual = false
 
 try {
   fs.accessSync(serialDevice, fs.F_OK)
   SerialPort = require('serialport')
 } catch (e) {
-  console.log('warning using virtual serialport')
+  console.log('[warning] using virtual serialport')
+  virtual = true
   SerialPort = require('virtual-serialport')
   SerialPort.parsers = {
     readline: (foo) => 42
@@ -23,6 +25,13 @@ let arduino = new SerialPort(serialDevice, {
   baudrate: 9600,
   parser: SerialPort.parsers.readline('\n')
 })
+
+if (virtual) {
+  arduino.on('dataToDevice', (data) => {
+    //console.log('Answering:', data)
+    arduino.writeToComputer(data)
+  })
+}
 
 function send (port, gcode) {
   return new Promise((resolve, reject) => {
