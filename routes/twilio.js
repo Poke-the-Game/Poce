@@ -14,7 +14,7 @@ class TwilioHandler {
   }
 
   statusToString (status) {
-    return `[${status.type}] ${status.currentLayer}/${status.totalLayer} (${Math.round(status.progress*100)}%) layers`
+    return `[${status.type}] ${status.currentLayer}/${status.totalLayer} (${Math.round(status.progress * 100)}%) layers`
   }
 
   messageToResponse (msg) {

@@ -28,7 +28,7 @@ let arduino = new SerialPort(serialDevice, {
 
 if (virtual) {
   arduino.on('dataToDevice', (data) => {
-    //console.log('Answering:', data)
+    // console.log('Answering:', data)
     arduino.writeToComputer(data)
   })
 }
