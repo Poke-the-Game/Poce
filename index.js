@@ -16,6 +16,9 @@ app.use(webpackHotMiddleware(compiler, {
   log: console.log
 }))
 
+let tw = require('./routes/twilio')
+app.use('/messenger', tw)
+
 let api = require('./routes/api')
 app.use('/api', api)
 
