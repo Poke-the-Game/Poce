@@ -7,6 +7,7 @@ import Row from 'react-bootstrap/lib/Row';
 import Col from 'react-bootstrap/lib/Col';
 import Image from 'react-bootstrap/lib/Image';
 import Table from 'react-bootstrap/lib/Table';
+import ProgressBar from 'react-bootstrap/lib/ProgressBar';
 
 import Fetch from 'react-fetch';
 
@@ -41,12 +42,19 @@ class Content extends React.Component {
 
    render() {
       var image_border = {
-        border: '1px solid black',
-        height: '200px'
+        'height': '300px',
+        'display': 'block',
+        'margin-left': 'auto',
+        'margin-right': 'auto'
       }
       var btn_margin = {
         'margin-right': '5px'
       }
+      var progress_bar = {
+        'margin': '5px'
+      }
+
+      const now = 60;
       return (
          <div>
            <Grid>
@@ -63,19 +71,22 @@ class Content extends React.Component {
                </Col>
 
               <Col md={6} mdPull={6}>
-                <div style={image_border}>
-                  <Image src="/images/slice_example.png" />
-                  here comes image
+                <div>
+                  <Image style={image_border} src="/images/slice_example.png" responsive />
+                  <ProgressBar now={now} label={`${now}%`} style={progress_bar} striped active/>
+                  <p><strong>Printing job status:</strong></p>
                 </div>
-                <p><strong>Printing job status:</strong></p>
-                <Fetch url="http://localhost:3000/api/status">
-                  <TestComponent/>
-                </Fetch>
 
                 <div>
                     <button className="btn btn-danger" onClick={this.handleStop} style={btn_margin}>Stop Print</button>
                     <button className="btn btn-primary" type="submit" style={btn_margin}>Pause Print</button>
                 </div>
+
+                <Fetch url="http://localhost:3000/api/status">
+                  <TestComponent/>
+                </Fetch>
+
+
               </Col>
 
              </Row>
@@ -96,11 +107,26 @@ class Content extends React.Component {
    }
 }
 
+// class LoadSlice extends React.Component {
+//   render() {
+//     console.log(this.prop);
+//     return(
+//       <div>
+//         //<Image src="this.prop" />
+//       </div>
+//     );
+//   }
+// }
+
 class TestComponent extends React.Component{
   render(){
-    console.log(this.props.type)
+
+    var job_status_container = {
+      'margin-top': '20px'
+    }
+
     return (
-      <div>
+      <div style={job_status_container}>
         <Table striped bordered condensed hover>
            <tbody>
              <tr>

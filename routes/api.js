@@ -31,19 +31,26 @@ class JobHandler {
       timeTotal: -1,
       shutterPos: -1,
       z_position: -1,
+      progress: -1,
       currentJob: {}
     }
+
+    let root = `${__dirname}/../resins`
+    let fname = `${root}/resins.json`
+    this._resins = require(path.resolve(fname))
 
     this._controller = new Controller()
     this._controller.on('start', () => this._status.type = State.PRINTING)
     this._controller.on('end', () => this._status.type = State.PROCESSING)
     this._controller.on('done', () => this._status.type = State.IDLE)
     this._controller.on('progress', this.onPrintingProgress.bind(this))
+    this._controller.on('shutter', (pos) => this._status.shutterPos = pos)
   }
 
   get jobs () { return this._jobs }
   get status () { return this._status }
   get running () { return this._status.type !== State.IDLE && this._status.type !== State.PAUSED }
+  get resins () { return this._resins }
 
   addJob (job) {
     // also starts job
@@ -60,8 +67,11 @@ class JobHandler {
     this._status.type = State.PROCESSING
   }
 
-  onPrintingProgress (perc) {
-    console.log('progress', perc)
+  onPrintingProgress (layer, total, z_pos) {
+    this._status.progress = layer / total
+    this._status.currentLayer = layer
+    this._status.totalLayer = total
+    this._status.z_position = z_pos
   }
 }
 
@@ -93,7 +103,7 @@ api.post('/jobs', (req, res) => {
   }
 
   jobHandler.addJob({
-    resin: req.query.resin,
+    resin: jobHandler.resins[req.query.resin],
     file: req.query.file
   })
 
@@ -117,9 +127,7 @@ api.get('/projector/currentImage', (req, res) => {
 })
 
 api.get('/resins', (req, res) => {
-  let root = `${__dirname}/../resins`
-  let fname = `${root}/resins.json`
-  res.json(require(path.resolve(fname)))
+  res.json(jobHandler.resins)
 })
 
 // catch non-existing commands
