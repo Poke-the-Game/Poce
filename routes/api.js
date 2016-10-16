@@ -47,7 +47,8 @@ class JobHandler {
       if (name.endsWith('.svg')) {
         this._models.push({
           id: this._models.length,
-          file: name
+          file: name,
+          name: name.split('.')[0]
         })
       }
     }

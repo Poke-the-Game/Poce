@@ -29,7 +29,7 @@ let arduino = new SerialPort(serialDevice, {
 if (virtual) {
   arduino.on('dataToDevice', (data) => {
     // console.log('Answering:', data)
-    arduino.writeToComputer(data)
+    setTimeout(() => arduino.writeToComputer(data), 300)
   })
 }
 
@@ -64,8 +64,9 @@ class Controller extends EventEmitter {
       return
     }
 
-    this.emit('start')
     sendAll(arduino, config.gcode.start)
+    .then(() => sendAll(arduino, ['G4 P100']))
+    .then(() => this.emit('start'))
     .then(() => this.sendLayers(job, 10))
     .then(() => sendAll(arduino, ['G4 P100']))
     .then(() => this.emit('end'))
@@ -79,9 +80,9 @@ class Controller extends EventEmitter {
 
     let root = `${__dirname}/../models`
     let fb_device = '/dev/fb0'
-    let fname = 'gear_small.svg'
+    let fname = job.file
 
-    for (var i = 0; i < num; i++) {
+    for (let i = 0; i < num; i++) {
       let before = config.gcode.layer.before.map((gcode) => format(gcode, {position: i * layerheight}))
       let open = config.gcode.shutter.open.map((gcode) => format(gcode, {position: i * layerheight}))
       let close = config.gcode.shutter.close.map((gcode) => format(gcode, {position: i * layerheight}))

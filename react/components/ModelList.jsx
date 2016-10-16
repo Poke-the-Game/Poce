@@ -1,7 +1,5 @@
 import React from 'react'
 
-import fetch from 'node-fetch'
-
 class ModelList extends React.Component {
   constructor (props) {
     super(props)
@@ -11,7 +9,7 @@ class ModelList extends React.Component {
     .then(function (json) { this.setState({list: json}) }.bind(this))
   }
   render () {
-    var nodes = this.state.list.map(function (model) { return <Model name={model.name} /> })
+    var nodes = this.state.list.map(function (model) { return <Model name={model.name} file={model.file} /> })
     return (
       <div>
         {nodes}
@@ -29,14 +27,14 @@ class Model extends React.Component {
         </div>
         <div className='panel-body'>
           <p><Resins /></p>
-          <p><button className='btn btn-block btn-primary' onClick={this.handleClick}>Print</button></p>
+          <p><button className='btn btn-block btn-primary' onClick={this.handleClick.bind(this)}>Print</button></p>
         </div>
       </div>
     )
   }
 
   handleClick () {
-    fetch('http://localhost:3000/api/jobs?resin=0&file=0', {method: 'POST'})
+    fetch('http://localhost:3000/api/jobs?resin=0&file=' + this.props.file, {method: 'POST'})
     .then(response => response.json())
     .then(function (json) { this.setState({list: json}) }.bind(this))
   }

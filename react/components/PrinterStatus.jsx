@@ -1,6 +1,5 @@
 import React from 'react'
 
-import fetch from 'node-fetch'
 
 class PrinterStatus extends React.Component {
   constructor (props) {
