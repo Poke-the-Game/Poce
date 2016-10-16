@@ -49,7 +49,8 @@ class Content extends React.Component {
       }
       var btn_margin = {
         'margin-right': '5px',
-        'margin-top': '5px'
+        'margin-top': '5px',
+        'margin-bottom': '7px'
       }
       var progress_bar = {
         'margin': '5px'
@@ -59,6 +60,9 @@ class Content extends React.Component {
         'width': '400px',
         'margin-left': 'auto',
         'margin-right': 'auto'
+      }
+      var resin_list = {
+        'width': '400px'
       }
 
       const now = 60;
@@ -78,6 +82,21 @@ class Content extends React.Component {
 
                  <div>
                     <button className="btn btn-primary" onClick={this.handleUpload} style={btn_margin}>Upload .svg</button>
+                 </div>
+
+                 <div>
+                    <p><strong>Start new print job:</strong></p>
+                    <p>Will print file xyz.svg</p>
+                    <p>with layer-height .05mm</p>
+                    <p>using resin</p>
+                    <select class="form-control" style={resin_list}>
+                      <option>Formlabs ABS</option>
+                      <option>Water Clear</option>
+                      <option>Crazy Stuff</option>
+                    </select>
+                 </div>
+                 <div>
+                    <button className="btn btn-success" onClick={this.handleUpload} style={btn_margin}>Start printing</button>
                  </div>
                </Col>
 
