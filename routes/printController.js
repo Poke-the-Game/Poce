@@ -51,7 +51,7 @@ function sendAll (port, gcodes) {
 class Controller extends EventEmitter {
   startJob (job, sync = false) {
     if (!sync) {
-      setTimeout(job => this.startJob(job, sync = true))
+      setTimeout(() => this.startJob(job, sync = true))
       return
     }
 
