@@ -58,12 +58,18 @@ function sendAll (port, gcodes) {
 }
 
 class Controller extends EventEmitter {
+  constructor (...args) {
+    super(...args)
+    this._cancel = false
+  }
+
   startJob (job, sync = false) {
     if (!sync) {
       setTimeout(() => this.startJob(job, sync = true))
       return
     }
 
+    this._cancel = false
     sendAll(arduino, config.gcode.start)
     .then(() => sendAll(arduino, ['G4 P100']))
     .then(() => this.emit('start'))
@@ -72,6 +78,11 @@ class Controller extends EventEmitter {
     .then(() => this.emit('end'))
     .then(() => sendAll(arduino, config.gcode.end))
     .then(() => this.emit('done'))
+    .catch((err) => this.emit('done'))
+  }
+
+  cancelJob () {
+    this._cancel = true
   }
 
   sendLayers (job, num) {
@@ -95,7 +106,7 @@ class Controller extends EventEmitter {
 
       p = p.then(() => sendAll(arduino, before))
       .then(() => spawn('inkscape', ['--without-gui', `--export-png=${root}/render.png`, export_layer, '--export-id-only', '--export-area-page', '--export-dpi=1000', '--export-background=black', `${root}/${fname}`]))
-      .then(() => spawn('avconv', ['-loglevel', 'panic', '-y', '-vcodec', 'png', '-i', `${root}/render.png`, '-vcodec', 'rawvideo', '-f', 'rawvideo', '-pix_fmt', 'rgb32', '-vf', 'pad=1024:768:120:40:black', fb_device]))
+      //.then(() => spawn('avconv', ['-loglevel', 'panic', '-y', '-vcodec', 'png', '-i', `${root}/render.png`, '-vcodec', 'rawvideo', '-f', 'rawvideo', '-pix_fmt', 'rgb32', '-vf', 'pad=1024:768:120:40:black', fb_device]))
       .then(() => sendAll(arduino, open))
       .then(() => this.emit('shutter', 'open'))
       .then(() => new Promise((resolve) => setTimeout(resolve, job.resin.attributes.cureTime)))
@@ -103,7 +114,15 @@ class Controller extends EventEmitter {
       .then(() => this.emit('shutter', 'close'))
       .then(() => sendAll(arduino, after))
       .then(() => this.emit('progress', currentLayer, totalLayer, z_pos))
+      .then(() => {
+        if (this._cancel) {
+          this._cancel = false
+          return Promise.reject()
+        }
+        return Promise.resolve()
+      })
     }
+
     return p
   }
 }

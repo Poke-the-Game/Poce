@@ -71,6 +71,10 @@ class JobHandler {
     // also starts job
     this._jobs.push(job)
 
+    this._status.currentLayer = 0
+    this._status.totalLayer = 9
+    this._status.progress = 0
+
     this._status.type = State.PROCESSING // state will progress to State.PRINTING eventually
     this._status.currentJob = _.last(this._jobs)
 
@@ -80,6 +84,7 @@ class JobHandler {
   cancelCurrentJob () {
     // state will progress to State.PAUSED eventually
     this._status.type = State.PROCESSING
+    this._controller.cancelJob()
   }
 
   onPrintingProgress (layer, total, z_pos) {
