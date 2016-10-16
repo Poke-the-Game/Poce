@@ -5,6 +5,7 @@ const bodyParser = require('body-parser')
 const _ = require('lodash')
 
 const Controller = require('./printController.js').Controller
+const spawn = require('spawn-promise')
 
 let api = express.Router()
 api.use(bodyParser.json())
@@ -143,6 +144,19 @@ api.get('/projector/currentImage', (req, res) => {
   let root = `${__dirname}/../models`
   let fname = `${root}/render.png`
   res.sendFile(path.resolve(fname))
+})
+
+var showPattern = false
+var dpi = 92
+
+api.put('/projector/', (req, res) => {
+  showPattern = req.query.showPattern !== undefined ? req.query.showPattern : showPattern
+  dpi = req.query.dpi !== undefined ? req.query.dpi : dpi
+  if (showPattern) {
+    spawn('inkscape', ['--without-gui', `--export-png=${__dirname}/../calibration_pattern.png`, '--export-area-page', `--export-dpi=${dpi}`, `${__dirname}/../calibration_pattern.svg`])
+    .then(() => spawn('avconv', ['-loglevel', 'panic', '-y', '-vcodec', 'png', '-i', `${__dirname}/../calibration_pattern.png`, '-vcodec', 'rawvideo', '-f', 'rawvideo', '-pix_fmt', 'rgb32', '-vf', 'pad=1024:768:ow/2-iw/2:oh/2-ih/2:black', '/dev/fb0']))
+  }
+  res.json({})
 })
 
 api.get('/resins', (req, res) => {
