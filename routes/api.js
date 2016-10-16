@@ -167,6 +167,12 @@ api.get('/projector/currentImage', (req, res) => {
 var showPattern = false
 var dpi = 92
 
+api.get('/projector', (req, res) => {
+  res.json({
+    dpi: 90
+  })
+})
+
 api.put('/projector/', (req, res) => {
   showPattern = req.query.showPattern !== undefined ? req.query.showPattern : showPattern
   dpi = req.query.dpi !== undefined ? req.query.dpi : dpi
