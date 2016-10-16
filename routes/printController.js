@@ -79,6 +79,7 @@ class Controller extends EventEmitter {
 
     let root = `${__dirname}/../models`
     let fb_device = '/dev/fb0'
+    let fname = 'gear_small.svg'
 
     for (var i = 0; i < num; i++) {
       let before = config.gcode.layer.before.map((gcode) => format(gcode, {position: i * layerheight}))
@@ -87,16 +88,20 @@ class Controller extends EventEmitter {
       let after = config.gcode.layer.after.map((gcode) => format(gcode, {position: i * layerheight}))
 
       let export_layer = `--export-id=layer${i}`
-      let progress = i / (num - 1)
+      let currentLayer = i
+      let totalLayer = num - 1
+      let z_pos = i * layerheight
 
       p = p.then(() => sendAll(arduino, before))
-      .then(() => spawn('inkscape', ['--without-gui', `--export-png=${root}/render.png`, export_layer, '--export-id-only', '--export-area-page', '--export-dpi=1000', '--export-background=black', `${root}/gear_small.svg`]))
+      .then(() => spawn('inkscape', ['--without-gui', `--export-png=${root}/render.png`, export_layer, '--export-id-only', '--export-area-page', '--export-dpi=1000', '--export-background=black', `${root}/${fname}`]))
       .then(() => spawn('avconv', ['-loglevel', 'panic', '-y', '-vcodec', 'png', '-i', `${root}/render.png`, '-vcodec', 'rawvideo', '-f', 'rawvideo', '-pix_fmt', 'rgb32', '-vf', 'pad=1024:768:120:40:black', fb_device]))
       .then(() => sendAll(arduino, open))
+      .then(() => this.emit('shutter', 'open'))
       .then(() => new Promise((resolve) => setTimeout(resolve, job.resin.attributes.cureTime)))
       .then(() => sendAll(arduino, close))
+      .then(() => this.emit('shutter', 'close'))
       .then(() => sendAll(arduino, after))
-      .then(() => this.emit('progress', progress))
+      .then(() => this.emit('progress', currentLayer, totalLayer, z_pos))
     }
     return p
   }

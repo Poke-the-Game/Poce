@@ -31,6 +31,7 @@ class JobHandler {
       timeTotal: -1,
       shutterPos: -1,
       z_position: -1,
+      progress: -1,
       currentJob: {}
     }
 
@@ -43,6 +44,7 @@ class JobHandler {
     this._controller.on('end', () => this._status.type = State.PROCESSING)
     this._controller.on('done', () => this._status.type = State.IDLE)
     this._controller.on('progress', this.onPrintingProgress.bind(this))
+    this._controller.on('shutter', (pos) => this._status.shutterPos = pos)
   }
 
   get jobs () { return this._jobs }
@@ -65,8 +67,11 @@ class JobHandler {
     this._status.type = State.PROCESSING
   }
 
-  onPrintingProgress (perc) {
-    console.log('progress', perc)
+  onPrintingProgress (layer, total, z_pos) {
+    this._status.progress = layer / total
+    this._status.currentLayer = layer
+    this._status.totalLayer = total
+    this._status.z_position = z_pos
   }
 }
 
