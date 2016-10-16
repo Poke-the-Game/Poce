@@ -82,7 +82,7 @@ class Controller extends EventEmitter {
 
       p = p.then(() => sendAll(arduino, before))
       .then(() => spawn('inkscape', ['--without-gui', `--export-png=${root}/render.png`, export_layer, '--export-id-only', '--export-area-page', '--export-dpi=1000', '--export-background=black', `${root}/gear_small.svg`]))
-      .then(() => spawn('avconv', ['-loglevel', 'panic', '-y', '-vcodec', 'png', '-i', `${root}/render.png`, '-vcodec', 'rawvideo', '-f', 'rawvideo', '-pix_fmt', 'rgb32', '-vf', 'pad=1024:768:120:40:blue', fb_device]))
+      .then(() => spawn('avconv', ['-loglevel', 'panic', '-y', '-vcodec', 'png', '-i', `${root}/render.png`, '-vcodec', 'rawvideo', '-f', 'rawvideo', '-pix_fmt', 'rgb32', '-vf', 'pad=1024:768:120:40:black', fb_device]))
       .then(() => sendAll(arduino, open))
       .then(() => new Promise((resolve) => setTimeout(resolve, 5000)))
       .then(() => sendAll(arduino, close))
