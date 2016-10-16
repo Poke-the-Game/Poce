@@ -8,9 +8,8 @@ tw.use(bodyParser.urlencoded({extended: false}))
 tw.use(bodyParser.json())
 
 class TwilioHandler {
-  constructor () {
-    this.client = new Twilio(
-      process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN)
+  constructor (sid, token) {
+    this.client = new Twilio(sid, token)
   }
 
   messageToResponse (msg) {
@@ -38,7 +37,13 @@ class TwilioHandler {
   }
 }
 
-let myHandler = new TwilioHandler()
-tw.post('/msg', (req, res) => myHandler.handlePost(req, res))
+if (process.env.TWILIO_ACCOUNT_SID === undefined || process.env.TWILIO_AUTH_TOKEN === undefined) {
+  console.log('$TWILIO_ACCOUNT_SID and/or $TWILIO_AUTH_TOKEN not set, disabling twilio support...')
+  console.log('Possible fix:\n\texport TWILIO_ACCOUNT_SID="<SID>"\n\texport TWILIO_AUTH_TOKEN="<TOKEN>"')
+} else {
+  let myHandler = new TwilioHandler(
+    process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN)
+  tw.post('/msg', (req, res) => myHandler.handlePost(req, res))
+}
 
 module.exports = tw
