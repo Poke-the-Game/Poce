@@ -2,6 +2,7 @@ import React from 'react'
 
 import PrinterStatus from './PrinterStatus.jsx'
 import ModelList from './ModelList.jsx'
+import ProjectorCalibration from './ProjectorCalibration.jsx'
 
 class App extends React.Component {
   render () {
@@ -11,7 +12,8 @@ class App extends React.Component {
         <p>
           <button className='btn btn-block btn-danger' onClick={this.handleCancel}>Cancel</button>
         </p>
-        <ModelList></ModelList>
+        <ModelList />
+        <ProjectorCalibration />
       </div>
     )
   }
