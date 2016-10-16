@@ -20,7 +20,7 @@ class App extends React.Component {
   }
 
   handleCancel () {
-    fetch('http://localhost:3000/api/cancelCurrentJob', {method: 'POST'})
+    fetch('/api/cancelCurrentJob', {method: 'POST'})
   }
 }
 

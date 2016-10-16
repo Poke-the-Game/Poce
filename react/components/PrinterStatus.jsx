@@ -4,14 +4,14 @@ import React from 'react'
 class PrinterStatus extends React.Component {
   constructor (props) {
     super(props)
-    this.state = {currentImage: 'http://localhost:3000/api/projector/currentImage'}
+    this.state = {currentImage: '/api/projector/currentImage'}
     setInterval(function () {
-      fetch('http://localhost:3000/api/status')
+      fetch('/api/status')
       .then(response => response.json())
       .then(function (json) { this.setState(json) }.bind(this))
     }.bind(this), 200)
     setInterval(function () {
-      this.setState({currentImage: 'http://localhost:3000/api/projector/currentImage?' + Math.random()})
+      this.setState({currentImage: '/api/projector/currentImage?' + Math.random()})
     }.bind(this), 2000)
   }
   render () {

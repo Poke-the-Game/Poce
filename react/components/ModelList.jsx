@@ -4,7 +4,7 @@ class ModelList extends React.Component {
   constructor (props) {
     super(props)
     this.state = {list: []}
-    fetch('http://localhost:3000/api/models')
+    fetch('/api/models')
     .then(response => response.json())
     .then(function (json) { this.setState({list: json}) }.bind(this))
   }
@@ -34,7 +34,7 @@ class Model extends React.Component {
   }
 
   handleClick () {
-    fetch('http://localhost:3000/api/jobs?resin=0&file=' + this.props.file, {method: 'POST'})
+    fetch('/api/jobs?resin=0&file=' + this.props.file, {method: 'POST'})
     .then(response => response.json())
     .then(function (json) { this.setState({list: json}) }.bind(this))
   }
@@ -44,7 +44,7 @@ class Resins extends React.Component {
   constructor (props) {
     super(props)
     this.state = {list: []}
-    fetch('http://localhost:3000/api/resins')
+    fetch('/api/resins')
     .then(response => response.json())
     .then(function (json) { this.setState({list: json}) }.bind(this))
   }

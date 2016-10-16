@@ -4,7 +4,7 @@ class ProjectorCalibration extends React.Component {
   constructor (props) {
     super(props)
     this.state = {dpi: 0}
-    fetch('http://localhost:3000/api/projector')
+    fetch('/api/projector')
     .then(response => response.json())
     .then(function (json) { this.setState(json) }.bind(this))
   }
@@ -26,7 +26,7 @@ class ProjectorCalibration extends React.Component {
   handleChange (event) {
     let dpi = event.target.value
     this.setState({dpi: dpi})
-    fetch('http://localhost:3000/api/projector?showPattern=1&dpi=' + dpi, {method: 'PUT'})
+    fetch('/api/projector?showPattern=1&dpi=' + dpi, {method: 'PUT'})
   }
 }
 
