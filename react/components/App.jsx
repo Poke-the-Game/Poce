@@ -62,7 +62,8 @@ class Content extends React.Component {
         'margin-right': 'auto'
       }
       var resin_list = {
-        'width': '400px'
+        'width': '400px',
+        'margin-bottom': '10px'
       }
 
       const now = 60;
