@@ -8,6 +8,7 @@ class App extends React.Component {
   render () {
     return (
       <div className='container'>
+        <h1>Poce</h1>
         <PrinterStatus></PrinterStatus>
         <p>
           <button className='btn btn-block btn-danger' onClick={this.handleCancel}>Cancel</button>
