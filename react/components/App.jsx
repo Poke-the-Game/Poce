@@ -59,7 +59,7 @@ class Content extends React.Component {
 
               <Col md={6} mdPull={6}>
                 <div style={image_border}>
-                  <Image src="../../static/images/slice_example.png" />
+                  <Image src="/images/slice_example.png" />
                   here comes image
                 </div>
                 <p><strong>Printing job status:</strong></p>
