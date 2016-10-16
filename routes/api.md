@@ -13,3 +13,5 @@ Base url: `<server>/api/`
   * `POST` → cancel current job
 * `/projector/currentImage`
   * `GET` → PNG of currently projected image
+* `/resins`
+  * `GET` → get all available resins 

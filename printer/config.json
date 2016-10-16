@@ -1,6 +1,4 @@
 {
-  "cureTime": 2000,
-  "liftDistance": 0.2,
   "gcode" : {
     "init": ["M17", "G90", "G28 A", "G92 A0", "M18"],
     "shutter": {

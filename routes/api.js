@@ -116,6 +116,12 @@ api.get('/projector/currentImage', (req, res) => {
   res.sendFile(path.resolve(fname))
 })
 
+api.get('/resins', (req, res) => {
+  let root = `${__dirname}/../resins`
+  let fname = `${root}/resins.json`
+  res.json(require(path.resolve(fname)))
+})
+
 // catch non-existing commands
 api.get('/*', (req, res) => {
   res.status(400).json({message: 'command not found'})
