@@ -24,28 +24,9 @@ let arduino = new SerialPort(serialDevice, {
   parser: SerialPort.parsers.readline('\n')
 })
 
-function waitForCompletion (port) { // add a timeout?
-  return new Promise((resolve, reject) => {
-    port.write('G4 P1\n')
-    console.log('G4 send')
-    port.on('data', (data) => {
-      if (data.toString().includes('Z_move_comp')) {
-        resolve(data.toString())
-      } else {
-        console.log(data.toString())
-      }
-    })
-
-    port.on('error', (err) => {
-      reject(err)
-    })
-  })
-}
-
 function send (port, gcode) {
   return new Promise((resolve, reject) => {
     port.write(gcode + '\n')
-    console.log('send: ' + gcode)
 
     let received = (data) => {
       // console.log('received: ' + data)
@@ -67,59 +48,48 @@ function sendAll (port, gcodes) {
   return gcodes.reduce((p, gcode) => p.then(() => send(port, gcode)), Promise.resolve())
 }
 
-function sendLayers (num) {
-  let p = Promise.resolve()
-  let layerheight = 2
-
-  let root = `${__dirname}/../models`
-  let fb_device = '/dev/fb0'
-
-  for (var i = 0; i < num; i++) {
-    let before = config.gcode.layer.before.map((gcode) => format(gcode, {position: i * layerheight}))
-    let open = config.gcode.shutter.open.map((gcode) => format(gcode, {position: i * layerheight}))
-    let close = config.gcode.shutter.close.map((gcode) => format(gcode, {position: i * layerheight}))
-    let after = config.gcode.layer.after.map((gcode) => format(gcode, {position: i * layerheight}))
-
-    let export_layer = `--export-id=layer${i}`
-
-    p = p.then(() => sendAll(arduino, before))
-    .then(() => spawn('inkscape', ['--without-gui', `--export-png=${root}/render.png`, export_layer, '--export-id-only', '--export-area-page', '--export-dpi=1000', '--export-background=black', `${root}/gear_small.svg`]))
-    .then(() => spawn('avconv', ['-loglevel', 'panic', '-y', '-vcodec', 'png', '-i', `${root}/render.png`, '-vcodec', 'rawvideo', '-f', 'rawvideo', '-pix_fmt', 'rgb32', '-vf', 'pad=1024:768:120:40:blue', fb_device]))
-    .then(() => sendAll(arduino, open))
-    .then(() => new Promise((resolve) => setTimeout(resolve, 5000)))
-    .then(() => sendAll(arduino, close))
-    .then(() => sendAll(arduino, after))
-    // this.emit('progress', i / num)
-  }
-  return p
-}
-
 class Controller extends EventEmitter {
   startJob (job, sync = false) {
     if (!sync) {
-      console.log('hey ho let\'s go')
-      setTimeout(job => this.startJob(job, sync = true))
+      setTimeout(() => this.startJob(job, sync = true))
       return
     }
-    console.log('preparing to print')
-    // arduino.on('open', function () {
-    console.log('### opened')
-    arduino.write(config.gcode.start)
+
     this.emit('start')
-
-    console.log('### sending stuff')
-
     sendAll(arduino, config.gcode.start)
-    .then(() => sendLayers(10))
+    .then(() => this.sendLayers(job, 10))
     .then(() => sendAll(arduino, ['G4 P100']))
+    .then(() => this.emit('end'))
     .then(() => sendAll(arduino, config.gcode.end))
-    .then(function () { console.log('TADAAAA') })
+    .then(() => this.emit('done'))
+  }
 
-    this.emit('end')
-    arduino.write(config.gcode.end)
-    waitForCompletion(arduino)
-    this.emit('done')
-    // })
+  sendLayers (job, num) {
+    let p = Promise.resolve()
+    let layerheight = 2
+
+    let root = `${__dirname}/../models`
+    let fb_device = '/dev/fb0'
+
+    for (var i = 0; i < num; i++) {
+      let before = config.gcode.layer.before.map((gcode) => format(gcode, {position: i * layerheight}))
+      let open = config.gcode.shutter.open.map((gcode) => format(gcode, {position: i * layerheight}))
+      let close = config.gcode.shutter.close.map((gcode) => format(gcode, {position: i * layerheight}))
+      let after = config.gcode.layer.after.map((gcode) => format(gcode, {position: i * layerheight}))
+
+      let export_layer = `--export-id=layer${i}`
+      let progress = i / (num - 1)
+
+      p = p.then(() => sendAll(arduino, before))
+      .then(() => spawn('inkscape', ['--without-gui', `--export-png=${root}/render.png`, export_layer, '--export-id-only', '--export-area-page', '--export-dpi=1000', '--export-background=black', `${root}/gear_small.svg`]))
+      .then(() => spawn('avconv', ['-loglevel', 'panic', '-y', '-vcodec', 'png', '-i', `${root}/render.png`, '-vcodec', 'rawvideo', '-f', 'rawvideo', '-pix_fmt', 'rgb32', '-vf', 'pad=1024:768:120:40:black', fb_device]))
+      .then(() => sendAll(arduino, open))
+      .then(() => new Promise((resolve) => setTimeout(resolve, job.resin.attributes.cureTime)))
+      .then(() => sendAll(arduino, close))
+      .then(() => sendAll(arduino, after))
+      .then(() => this.emit('progress', progress))
+    }
+    return p
   }
 }
 
