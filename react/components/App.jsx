@@ -48,10 +48,17 @@ class Content extends React.Component {
         'margin-right': 'auto'
       }
       var btn_margin = {
-        'margin-right': '5px'
+        'margin-right': '5px',
+        'margin-top': '5px'
       }
       var progress_bar = {
         'margin': '5px'
+      }
+      var files_list = {
+        'height': '266px',
+        'width': '400px',
+        'margin-left': 'auto',
+        'margin-right': 'auto'
       }
 
       const now = 60;
@@ -61,12 +68,16 @@ class Content extends React.Component {
              <Row className="show-grid">
                <Col md={6} mdPush={6}>
                  <div>
-                    <button className="btn btn-primary" onClick={this.handleUpload} style={btn_margin}>Upload .svg</button>
-                    <select class="form-control" multiple>
+                    <p><strong>Files on server:</strong></p>
+                    <select class="form-control" multiple style={files_list}>
                       <option>gear1.svg</option>
                       <option>calibration_cube.svg</option>
                       <option>geared-cube.svg</option>
                     </select>
+                 </div>
+
+                 <div>
+                    <button className="btn btn-primary" onClick={this.handleUpload} style={btn_margin}>Upload .svg</button>
                  </div>
                </Col>
 
