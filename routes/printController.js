@@ -103,9 +103,10 @@ class Controller extends EventEmitter {
       let currentLayer = i
       let totalLayer = num - 1
       let z_pos = i * layerheight
+      let dpi = job.dpi
 
       p = p.then(() => sendAll(arduino, before))
-      .then(() => spawn('inkscape', ['--without-gui', `--export-png=${root}/render.png`, export_layer, '--export-id-only', '--export-area-page', '--export-dpi=1000', '--export-background=black', `${root}/${fname}`]))
+      .then(() => spawn('inkscape', ['--without-gui', `--export-png=${root}/render.png`, export_layer, '--export-id-only', '--export-area-page', `--export-dpi=${dpi}`, '--export-background=black', `${root}/${fname}`]))
       .then(() => spawn('avconv', ['-loglevel', 'panic', '-y', '-vcodec', 'png', '-i', `${root}/render.png`, '-vcodec', 'rawvideo', '-f', 'rawvideo', '-pix_fmt', 'rgb32', '-vf', 'pad=1024:768:120:40:black', fb_device]))
       .then(() => sendAll(arduino, open))
       .then(() => this.emit('shutter', 'open'))

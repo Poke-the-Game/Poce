@@ -129,7 +129,8 @@ api.post('/jobs', (req, res) => {
 
   jobHandler.addJob({
     resin: jobHandler.resins[req.query.resin],
-    file: req.query.file
+    file: req.query.file,
+    dpi: jobHandler.pconf.dpi
   })
 
   res.status(202).json({message: 'job submitted'})
