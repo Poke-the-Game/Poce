@@ -6,12 +6,13 @@ const format = require('string-format')
 const spawn = require('spawn-promise')
 
 let SerialPort
-let serialDevice = '/dev/tty.usbmodem1411'
+let serialDevice = '/dev/ttyACM0'
 
 try {
   fs.accessSync(serialDevice, fs.F_OK)
-  SerialPort = require('node-serialport')
+  SerialPort = require('serialport')
 } catch (e) {
+  console.log('warning using virtual serialport')
   SerialPort = require('virtual-serialport')
   SerialPort.parsers = {
     readline: (foo) => 42
