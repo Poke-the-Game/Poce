@@ -1,3 +1,4 @@
+const fs = require('fs')
 const path = require('path')
 
 const express = require('express')
@@ -36,9 +37,20 @@ class JobHandler {
       currentJob: {}
     }
 
-    let root = `${__dirname}/../resins`
-    let fname = `${root}/resins.json`
-    this._resins = require(path.resolve(fname))
+    let resin_root = `${__dirname}/../resins`
+    let resin_fname = `${resin_root}/resins.json`
+    this._resins = require(path.resolve(resin_fname))
+
+    this._models = []
+    let model_root = `${__dirname}/../models`
+    for (let name of fs.readdirSync(model_root)) {
+      if (name.endsWith('.svg')) {
+        this._models.push({
+          id: this._models.length,
+          file: name
+        })
+      }
+    }
 
     this._controller = new Controller()
     this._controller.on('start', () => this._status.type = State.PRINTING)
@@ -52,6 +64,7 @@ class JobHandler {
   get status () { return this._status }
   get running () { return this._status.type !== State.IDLE && this._status.type !== State.PAUSED }
   get resins () { return this._resins }
+  get models () { return this._models }
 
   addJob (job) {
     // also starts job
@@ -122,22 +135,21 @@ api.post('/cancelCurrentJob', (req, res) => {
 })
 
 api.get('/models', (req, res) => {
-  res.json([
-    {id: 0, name: 'small gear', file: 'gear_small.stl'},
-    {id: 1, name: 'big gear', file: 'gear_big.stl'}
-  ])
+  res.json(jobHandler.models)
 })
 
 api.get('/models/:mid', (req, res) => {
-  res.json(
-    {id: req.params.mid, name: 'small gear', file: 'gear_small.stl'}
-  )
+  let mid = req.params.mid
+  if (mid < 0 || mid >= jobHandler.models.length) {
+    res.status(422).json({message: 'invalid model id'})
+    return
+  }
+
+  res.json(jobHandler.models[mid])
 })
 
 api.get('/models/:mid/layerheights', (req, res) => {
-  res.json(
-    [2, 5, 9]
-  )
+  res.json([2, 5, 9])
 })
 
 api.get('/projector/currentImage', (req, res) => {
