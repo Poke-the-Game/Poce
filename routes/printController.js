@@ -57,14 +57,14 @@ class Controller extends EventEmitter {
 
     this.emit('start')
     sendAll(arduino, config.gcode.start)
-    .then(() => this.sendLayers(10))
+    .then(() => this.sendLayers(job, 10))
     .then(() => sendAll(arduino, ['G4 P100']))
     .then(() => this.emit('end'))
     .then(() => sendAll(arduino, config.gcode.end))
     .then(() => this.emit('done'))
   }
 
-  sendLayers (num) {
+  sendLayers (job, num) {
     let p = Promise.resolve()
     let layerheight = 2
 
@@ -84,7 +84,7 @@ class Controller extends EventEmitter {
       .then(() => spawn('inkscape', ['--without-gui', `--export-png=${root}/render.png`, export_layer, '--export-id-only', '--export-area-page', '--export-dpi=1000', '--export-background=black', `${root}/gear_small.svg`]))
       .then(() => spawn('avconv', ['-loglevel', 'panic', '-y', '-vcodec', 'png', '-i', `${root}/render.png`, '-vcodec', 'rawvideo', '-f', 'rawvideo', '-pix_fmt', 'rgb32', '-vf', 'pad=1024:768:120:40:black', fb_device]))
       .then(() => sendAll(arduino, open))
-      .then(() => new Promise((resolve) => setTimeout(resolve, 5000)))
+      .then(() => new Promise((resolve) => setTimeout(resolve, job.resin.attributes.cureTime)))
       .then(() => sendAll(arduino, close))
       .then(() => sendAll(arduino, after))
       .then(() => this.emit('progress', progress))
