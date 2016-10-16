@@ -78,6 +78,7 @@ class Controller extends EventEmitter {
       let after = config.gcode.layer.after.map((gcode) => format(gcode, {position: i * layerheight}))
 
       let export_layer = `--export-id=layer${i}`
+      let progress = i / (num - 1)
 
       p = p.then(() => sendAll(arduino, before))
       .then(() => spawn('inkscape', ['--without-gui', `--export-png=${root}/render.png`, export_layer, '--export-id-only', '--export-area-page', '--export-dpi=1000', '--export-background=black', `${root}/gear_small.svg`]))
@@ -86,7 +87,7 @@ class Controller extends EventEmitter {
       .then(() => new Promise((resolve) => setTimeout(resolve, 5000)))
       .then(() => sendAll(arduino, close))
       .then(() => sendAll(arduino, after))
-      .then(() => this.emit('progress', i / num))
+      .then(() => this.emit('progress', progress))
     }
     return p
   }

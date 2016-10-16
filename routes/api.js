@@ -61,7 +61,7 @@ class JobHandler {
   }
 
   onPrintingProgress (perc) {
-    console.log(perc)
+    console.log('progress', perc)
   }
 }
 
