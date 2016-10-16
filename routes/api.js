@@ -120,6 +120,25 @@ api.post('/cancelCurrentJob', (req, res) => {
   res.status(202).json({message: 'job canceled'})
 })
 
+api.get('/models', (req, res) => {
+  res.json([
+    {id: 0, name: 'small gear', file: 'gear_small.stl'},
+    {id: 1, name: 'big gear', file: 'gear_big.stl'}
+  ])
+})
+
+api.get('/models/:mid', (req, res) => {
+  res.json(
+    {id: req.params.mid, name: 'small gear', file: 'gear_small.stl'}
+  )
+})
+
+api.get('/models/:mid/layerheights', (req, res) => {
+  res.json(
+    [2, 5, 9]
+  )
+})
+
 api.get('/projector/currentImage', (req, res) => {
   let root = `${__dirname}/../models`
   let fname = `${root}/render.png`
