@@ -9,5 +9,7 @@ Base url: `<server>/api/`
   * `POST` → create new job (and automatically start it)
     * `file=<filename>` - file to print
     * `resin=<id>` - id of resin profile to use
-* `cancelCurrentJob`
+* `/cancelCurrentJob`
   * `POST` → cancel current job
+* `/projector/currentImage`
+  * `GET` → PNG of currently projected image

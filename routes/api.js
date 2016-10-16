@@ -1,3 +1,5 @@
+const path = require('path')
+
 const express = require('express')
 const bodyParser = require('body-parser')
 const _ = require('lodash')
@@ -106,6 +108,12 @@ api.post('/cancelCurrentJob', (req, res) => {
 
   jobHandler.cancelCurrentJob()
   res.status(202).json({message: 'job canceled'})
+})
+
+api.get('/projector/currentImage', (req, res) => {
+  let root = `${__dirname}/../models`
+  let fname = `${root}/render.png`
+  res.sendFile(path.resolve(fname))
 })
 
 // catch non-existing commands
