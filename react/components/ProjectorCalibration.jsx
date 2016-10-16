@@ -3,6 +3,10 @@ import React from 'react'
 class ProjectorCalibration extends React.Component {
   constructor (props) {
     super(props)
+    this.state = {dpi: 0}
+    fetch('http://localhost:3000/api/projector')
+    .then(response => response.json())
+    .then(function (json) { this.setState(json) }.bind(this))
   }
   render () {
     return (
@@ -11,13 +15,18 @@ class ProjectorCalibration extends React.Component {
           <h3 className='panel-title'>Projector Calibration</h3>
         </div>
         <div className='panel-body'>
-          <div className="form-group">
-            <label for="dpi">DPI:</label>
-            <input type="number" className="form-control" id="dpi" value="" />
+          <div className='form-group'>
+            <label >DPI:</label>
+            <input type='number' className='form-control' id='dpi' value={this.state.dpi} onChange={this.handleChange.bind(this)} />
           </div>
         </div>
       </div>
     )
+  }
+  handleChange (event) {
+    let dpi = event.target.value
+    this.setState({dpi: dpi})
+    fetch('http://localhost:3000/api/projector?showPattern=1&dpi=' + dpi, {method: 'PUT'})
   }
 }
 
