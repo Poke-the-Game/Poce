@@ -3,7 +3,7 @@
 ## Setup
 
 Follow difficult process partly described [here](https://www.twilio.com/docs/api/notifications/guides/messenger-notifications#complete-facebook-app-configuration).
-Furthermore install version `^3.0.0-rc.13` of the twilio module(as of now):
+Furthermore install version `^3.0.0-rc.13` of the twilio module (as of now):
 
 ```bash
 npm install twilio@^3.0.0-rc.13
@@ -17,7 +17,7 @@ Download [ngrok](https://ngrok.com/download) and start it together with the node
 ./ngrok http <port of nodejs server>
 ```
 
-The remote url displayed by ngrok together with the RESTful resource (`<ngrok url>/messenger/msg`) must be put as `REQUEST URL` (POST) in the `Authenticate for Facebook Messaging` on [twilio](https://www.twilio.com/console/sms/settings).
+The remote url displayed by ngrok together with the RESTful resource (`<ngrok url>/messenger/msg`) must be put as `REQUEST URL` (POST) in the `Authenticate for Facebook Messaging` section on [twilio](https://www.twilio.com/console/sms/settings).
 
 The twilio wrapper in `twilio.js` assumes that the following two environment variables are set appropriately:
 
