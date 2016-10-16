@@ -74,9 +74,12 @@ function sendLayers (num) {
     let open = config.gcode.shutter.open.map((gcode) => format(gcode, {position: i * layerheight}))
     let close = config.gcode.shutter.close.map((gcode) => format(gcode, {position: i * layerheight}))
     let after = config.gcode.layer.after.map((gcode) => format(gcode, {position: i * layerheight}))
+
+    let export_layer = `--export-id=layer${i}`
+
     p = p.then(() => sendAll(arduino, before))
-    .then(() => spawn('inkscape', ['--without-gui', '--export-png=/home/pi/test/render.png', `--export-id=layer${i}`, '--export-id-only', '--export-area-page', '--export-dpi=10000', '--export-background=black', '/home/pi/test/gear_small.svg']))
-    .then(() => spawn('avconv', ['-y', '-vcodec', 'png', '-i', '/home/pi/test/render.png', '-vcodec', 'rawvideo', '-f', 'rawvideo', '-pix_fmt', 'rgb32', '-vf', 'pad=1024:768:120:40:blue', '/dev/fb0']))
+    .then(() => spawn('inkscape', ['--without-gui', '--export-png=/home/pi/test/render.png', export_layer, '--export-id-only', '--export-area-page', '--export-dpi=1000', '--export-background=black', '/home/pi/test/gear_small.svg']))
+    .then(() => spawn('avconv', ['-loglevel', 'panic', '-y', '-vcodec', 'png', '-i', '/home/pi/test/render.png', '-vcodec', 'rawvideo', '-f', 'rawvideo', '-pix_fmt', 'rgb32', '-vf', 'pad=1024:768:120:40:blue', '/dev/fb0']))
     .then(() => sendAll(arduino, open))
     .then(() => new Promise((resolve) => setTimeout(resolve, 5000)))
     .then(() => sendAll(arduino, close))
