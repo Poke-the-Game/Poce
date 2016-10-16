@@ -1,11 +1,24 @@
 const EventEmitter = require('events')
+const fs = require('fs')
 
 const config = require('../printer/config')
 const format = require('string-format')
 const spawn = require('spawn-promise')
 
-var SerialPort = require('serialport')
-var arduino = new SerialPort('/dev/ttyACM0', {
+let SerialPort
+let serialDevice = '/dev/tty.usbmodem1411'
+
+try {
+  fs.accessSync(serialDevice, fs.F_OK)
+  SerialPort = require('node-serialport')
+} catch (e) {
+  SerialPort = require('virtual-serialport')
+  SerialPort.parsers = {
+    readline: (foo) => 42
+  }
+}
+
+let arduino = new SerialPort(serialDevice, {
   baudrate: 9600,
   parser: SerialPort.parsers.readline('\n')
 })

@@ -33,6 +33,10 @@ class JobHandler {
     }
 
     this._controller = new Controller()
+    this._controller.on('start', () => this._status.type = State.PRINTING)
+    this._controller.on('end', () => this._status.type = State.PROCESSING)
+    this._controller.on('done', () => this._status.type = State.IDLE)
+    this._controller.on('progress', this.onPrintingProgress.bind(this))
   }
 
   get jobs () { return this._jobs }
@@ -52,9 +56,10 @@ class JobHandler {
   cancelCurrentJob () {
     // state will progress to State.PAUSED eventually
     this._status.type = State.PROCESSING
+  }
 
-    // for now... TODO: replace this with answer from backend-backend
-    this._status.type = State.IDLE
+  onPrintingProgress (perc) {
+    console.log(perc)
   }
 }
 
